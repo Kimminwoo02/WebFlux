@@ -1,0 +1,39 @@
+CompletionStage
+ - 50개에 가까운 연산자들을 활용하여 비동기 task들을 실행하고 값을 변형하는 등 chaining을 이용한 조합 가능
+ - 에러를 처리하기 위한 콜백 제공
+
+ForkJoinPool - ThreadPool
+ - CompletableFuture는 내부적으로 비동기 함수들을 실행하기 위해 ForkJoinPool을 사용
+ - ForkJoinPool의 기본 Size = 할당된 cpu 코어 -1
+ - 데몬 쓰레드. main 쓰레드가 종료되면 즉각적으로 종료
+
+ 데몬 쓰레드란?
+ 메인 쓰레드가 종료되면 실행여부와 상관없이 바로 종료되는 쓰레드
+
+ForkJoinPool = fork & join
+- Task를 fork를 통해서 subTask로 나누고
+- Thread Pool에서 Steal work 알고리즘을 이용해서 균등하게 처리
+- Join을 통해서 결과를 생성
+
+CompletionStage 연산자
+함수형 인터페이스
+ - 함수형 프로그래밍을 지원하기 위해 java8부터 도입
+ - 1개의 추상 메서드를 갖고 있는 인터페이스
+ - 함수를 1급 객체로 사용할 수 있다.
+ - 함수를 변수에 할당하거나 인자로 전달하고 반환값으로 사용 가능
+ - Function, Consumer, Supplier, Runnable 등
+ - 함수형 인터페이스를 구현한 익명 클래스를 람다식으로 변경 가능
+
+ CompletionStage 연산자와 연결
+ - Consumer-accept메소드    -> thenAccept(Consumer action)
+ - Function-apply 메소드   -> thenApply(Function fn)
+ - Function -compose 메소드    -> thenCompose(Function fn)
+ - Runnable - run 메소드    - >thenRun(Runnable action)
+
+
+ thenAccept[Async]
+ - Consumer를 파라미터로 받는다.
+ - 이전 task로부터 값을 받지만 값을 넘기지 않는다.
+ - 다음 task에게 null이 전달된다.
+ - 값을 받아서 action만 수행하는 경우 유용
+
