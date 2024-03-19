@@ -37,3 +37,34 @@ CompletionStage 연산자
  - 다음 task에게 null이 전달된다.
  - 값을 받아서 action만 수행하는 경우 유용
 
+ thenApply[Async]
+ - Function을 파라미터로 받는다
+ - 이전 task로부터 T타입의 값을 받아서 가공하고 U 타입의 값을 반환한다.
+ - 다음 task에게 반환했던 값이 전달된다.
+ - 값을 변형해서 전달해야 하는 경우 유용하다.
+ - ex) @FunctionalInterface
+ public interface Function<T,R> {
+    R apply(T t);
+ }
+
+ thenCompose
+ - Function을 파라미터로 받는다.
+ - 이전 task로부터 T 타입의 값을 받아서 가공하고 U 타입의 CompletionStage를 반환한다.
+ - 반환한 CompletionStage가 Done을 다음 task에 전달한다.
+ - 다른 future를 반환해야 하는 경우 유용하다.
+ CompletionStage<Integer> stage = Helper.completionStage();
+ stage.thenComposeAsync( value -> {
+    var next = Helper.addOne(value);
+    log.info("in thenComposeAsync : {}", next);
+    return next;
+ }).thenComposeAsync( value -> {
+    var next = Helper.addResultPrefix(value);
+    log.info("in thenComposeAsync2: {}", next);
+    return next;
+ }).thenAcceptAsync(value -> {
+    log.info("{} in thenAceptAsync", value);
+ });
+
+ Thread.sleep(1000);
+
+
