@@ -6,7 +6,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserBlockingService {
     private final UserRepository userRepository;
-    public Optional<User> getUserById(Long id){
+    public Optional<User> getUserById(String id){
         return userRepository.findById(id)
                 .map(user -> {
                     var image = imageRepository.findById(user.getProfileImageId())
