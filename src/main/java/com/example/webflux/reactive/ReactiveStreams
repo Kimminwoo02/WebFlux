@@ -45,4 +45,46 @@ Reactive란?
  두번 쨰 형태 : 작업량이 변화하더라도 응답성을 유지
  방법 : 비동기 non-blocking 기반의 메시지 큐를 사용하여 통신한다.
 
+Reactive Programming
+- 비동기 데이터 stream을 사용하는 패러다임
+- 모든 것이 이벤트로 구성되고 이벤트를 통해서 전파되어야 한다.
+    - event-driven 해야한다.
+    - 데이터의 전달, 에러, 완료까지 모두 이벤트로 취급
+-Reactive manifesto의 Responsive, Resilient, Elastic, Message Driven까지 모두 해당.
+
+Event-Driven vs message-driven
+- Message : event, command, query등 다양한 형태를 수용
+- Message-driven은 event, command, query등 다양한 형태의 메시지를 비동기적으로 가능하다면 배압을 적용해서 잔달하는 형태에 집중
+- event-driven은 message의 형태를 evnet로 제한
+- completion, error 심지어 값 까지도 이벤트의 형태로 전달
+- 따라서 reactive Programming은 reactive manifesto의 원칙을 지킨다.
+
+구조
+- Publisher, Subscriber, Subscription
+
+Publisher
+- subscribe 함수 제공해서 publisher에 다수의 subscirber 등록 지원
+- subscription을 포함하고 Subscriber가 추가되면 subscription을 제공
+
+Subscriber
+- subscribe하는 시점에 publisher로 부터 subscription을 받을 수 있는 인자 제공
+- onNext, onError, onComplete를 통해서 값이나 이벤트를 받을 수 있다.
+- onNext는 여러 번 onError, onComplete는 딱 한번 호출된다.
+
+Subscription
+- back-pressure를 조절할 수 있는 request함수
+- publisher가 onNext를 통해서 값을 전달하는 것을 취소할 수 있는 cancel 함수
+
+FixedIntPublisher
+- Flow, Publisher를 구현
+- 고정된 숫자의 integer를 전달하는 publisher
+- 8개의 integer를 전달 후 complete
+- iterator를 생성해서 subscription을 생성하고 subscriber에게 전달
+
+IntSubscription
+- flow.Subscription을 구현
+- subscriber의 onNext와 subscription의 request가 동기적으로 동작하면 안되기 때문에 executor를 이용해서 별도의 쓰레드에서 실행
+- 욫어 횟수를 count에 저장하고 결과에 함께 전달
+- 더 이상 iterator에 값이 없으면 onComplete를 호출
+
 
