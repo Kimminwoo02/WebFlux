@@ -14,4 +14,6 @@ public class SimpleColdPublisherMain {
         var subscriber2 = new SimpleNamedSubscriber<Integer>("subscriber2");
         publisher.subscribe(subscriber2);
     }
+
+
 }
