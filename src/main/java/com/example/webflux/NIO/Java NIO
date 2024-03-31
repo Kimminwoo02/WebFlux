@@ -1,64 +1,27 @@
-Java IO
-- java1.0에서 처음 도입
-- 파일과 네트워크에 데이터를 읽고 쓸 수 있는 API 제공
-- Byte 단위로 읽고 쓸 수 있는 스트림 제공
-- Blocking 단위로 동작
+NIO
+- java New Input/Output
+- 1.4에서 처음 도입
+- 파일과 네트워크에 데이터를 읽고 쓸 수 있는 API를 제공
+- buffer 기반
+- non-blocking 지원
+- selector, channel 도입을 높은 성능 보장
 
-InputStream
-- Closable 인터페이스를 구현하고 있다. 명시적으로 close 하거나 try-with-resource를 사용할 수 있다.
-- read : Stream으로 데이터를 읽고 읽은 값을 반환. -1 이라면 끝에 도달했다는 뜻이다.
-- close : Stream을 닫고 더 이상 데이터를 읽지 않는다.
-- 어떤 Source로 부터 데이터를 읽을지에 따라 다양한 구현체가 존재한다. (ex. FileStream, ByteArrayInputStream)
+Channel 과 Buffer
+- 데이터를 읽을 때 : 적절한 크기의 buffer를 생성하고 Channel의 read 메서드를 사용하여 데이터를 buffer에 저장
+- 데이터를 쓸 때 : 먼저 buffer에 데이터를 저장하고 Channel의 Write() 메서드를 사용하여 목적지로 전달
+- clear : 메서드로 초기화하여 다시 사용 가능
 
-BufferedInputStream
-- 다른 InputStream과 조합해서 사용
-- 임시 저장 공간인 buffer를 사용한다.
-- 한번 read를 호출할 때 buffer 사이즈만큼 미리 조회
-- 그 이후 read를 호출할 때 미리 저장한 buffer데이터를 반환
+Buffer의 종류
+- ByteBuffer
+- CharBuffer
+- ShortBuffer
+- IntBuffer
+- LongBuffer
+- FloatBuffer
+- DoubleBuffer
 
-serverSocket accept
-- serverSocket을 Open 하여 외부의 요청을 수신한다.
-- bind, accept를 통해서 serverSocket Open을 준비한다.
-
-socket Read
-- Accept가 끝나면 반환값으로 client의 socket을 전달
-- client socket의 getInputStream으로 socket inputStream에 접근
-
-SocketInputStream
-- SocketInputStream은 public이 아니기 때문에 직접 접근이 불가능하다.
-- socket.getInputStream으로만 접근 가능하다.
-- blocking이 발생한다.
-
-OutputStream
-- write시 바로 전송하지 않고 버퍼에 저장한 다음 일정량의 데이터가 모이면 한번에 전달한다.
-- Closable 구현. 명시적으로 close하거나 try-with-resource 사용 가능
-    - write : stream으로 데이터를 쓴다.
-    - flush : 버퍼의 모든 데이터를 출력하고 비운다.
-    - close : stream을 닫고 더 이상 쓰지 않는다.
-
- 어떤 destination에 데이터를 쓸 지에 따라 다양한 구현체가 존재한다.
- - fileOutputStream : file에 값을 쓸 수 있다. File Path나 객체를 통해서 FileOutputStream을 얻을 수 있다.
- - ByteArrayOutStream : 바이트 array에 값을 쓸 수 있다.
- - BufferedOutputStream : 다른 outputStream과 조합해서 사용한다. 한 번 write를 호출하면 buffer에만 write하고 flush하여 한번에 write한다.
-
- SocketOutputStream
- - SocketOutputStream은 public이 아니기 때문에 직접 접근이 불가능하다.
- - Socket.getOutputStream으로만 접근 가능하다.
- - blocking이 발생한다.
-
- Java IO Reader와 Writer
- - 1.1에서 도입되었다.
- - Character 단위로 읽고 쓸 수 있는 stream(Reader와 Writer)
- - 문자 인코딩 지원
- - blocking으로 동작
-
- Java IO의 문제점
- - 동기 Blocking으로 동작한다.
-    - application이 read를 호출하면 kernel이 응답을 돌려줄 때 까지, 아무것도 할 수 없다.
-    - I/O 요청이 발생할 때마다 쓰레드를 새로 할당하면 쓰레드를 생성 및 관리하는 비용과 컨텍스트 스위칭으로 인한 cpu 자원을 소모한다.
- - 커널 버퍼에 직접 접근이 불가하여 메모리 Copy가 발생한다.
-    - Hardware에서 값을 읽어오면, disk controller가 DMA를 통해서 커널 버퍼에 값을 복사
-    - 커널 버퍼에서 jvm 버퍼로 복사
-    - 이 과정에서 cpu 자원을 소모
-    - jvm 버퍼, jvm 메모리에 있기 때문에 gc 대상이 되고 이는 cpu 자원을 유발한다.
-
+Buffer의 위치속성
+- Capacity : Buffer가 저장할 수 있는 데이터의 최대 크기, Buffer 생성 시 결정되며 변경 불가
+- Position : Buffer에서 현재 위치를 가리킨다.버퍼에서 데이터를 읽거나 쓸 때 해당 위치부터 시작.
+- limit : Buffer에서 데이터를 읽거나 쓸 수 있는 마지막 위치 limit 이후로 데이터를 읽거나 쓰기 불가
+- mark : 현재 position 위치를 mark로 지정할 수 있고 reset 호출 시 position을 mark로 이동
