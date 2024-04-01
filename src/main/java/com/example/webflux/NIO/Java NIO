@@ -25,3 +25,25 @@ Buffer의 위치속성
 - Position : Buffer에서 현재 위치를 가리킨다.버퍼에서 데이터를 읽거나 쓸 때 해당 위치부터 시작.
 - limit : Buffer에서 데이터를 읽거나 쓸 수 있는 마지막 위치 limit 이후로 데이터를 읽거나 쓰기 불가
 - mark : 현재 position 위치를 mark로 지정할 수 있고 reset 호출 시 position을 mark로 이동
+
+
+DirectByteBuffer
+- native 메모리에 저장
+- 커널 메모리에서 복사를 하지 않으므로 데이터를 읽고 쓰는 속도가 빠르다.
+- 비용이 많이 드는 system call을 사용하므로 allocate, dealoocate가 느리다.
+
+HeapByteBuffer
+- JVM heap메모리에 저장. byte array를 매핑
+- 커널 메모리에서 복사가 일어나므로 데이터를 읽고 쓰는 속도가 느리다.
+- 이 과정에서 임시로 direct Buffer를 만들기 때문에 성능 저하
+- gc에서 관리가 되므로 allocate, deallocate가 빠르다.
+
+ByteBuffer
+- DirectByteBuffer: allocateDirect() 함수로 생성 가능
+- HeapByteBuffer: allocate(), wrap()함수로 생성가능
+- isDirect()로 구분 가능
+
+SelectableChannel
+- configuraBlocking 과 register함수 제공
+- configureBlocking
+    serverSocketChannel의 accent, socketChannel의 connect 등의 non-blocking으로 동작
