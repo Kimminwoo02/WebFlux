@@ -1,0 +1,11 @@
+Java AIO
+- java 1.7부터 NIO2를 지원
+- AsynchronousChannel을 지원
+- AsynchronousSocketChannel,AsynchronousServerSocketChannel, AsynchronousFileChannel등
+- Callback, Future를 지원
+- Thread Pool과 Epoll, kqueue등의 이벤트 알림 System call을 이용
+- I/O가 준비되었을 때 , Future 혹은 callback으로 비동기적인 로직 처리 가능
+
+AsynchronousFileChannel - callBAck
+
+
