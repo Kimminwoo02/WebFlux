@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -42,8 +41,9 @@ public class SelectorServer {
                         clientSocket.register(selector,SelectionKey.OP_READ);
                     }else if(key.isReadable()){
                         SocketChannel clientSocket = (SocketChannel) key.channel();
-                        
-                        handleRequest(clientSocket);
+
+                        String requestBody = handleRequest(clientSocket);
+                        sendResponse(clientSocket, requestBody);
                     }
                 }
 
@@ -56,19 +56,27 @@ public class SelectorServer {
 
 
     @SneakyThrows
-    private static void handleRequest(SocketChannel clientSocket) {
+    private static String handleRequest(SocketChannel clientSocket) {
         ByteBuffer requestByteBuffer = ByteBuffer.allocateDirect(1024);
         clientSocket.read(requestByteBuffer);
         requestByteBuffer.flip();
         String requestBody = StandardCharsets.UTF_8.decode(requestByteBuffer).toString();
         log.info("request : {}", requestBody);
 
+        return requestBody;
+
+
+
+    }
+
+    private static void sendResponse(SocketChannel clientSocket ,String requestBody) throws InterruptedException {
         Thread.sleep(10);
 
-        ByteBuffer wrap = ByteBuffer.wrap("This is server".getBytes());
-        clientSocket.write(requestByteBuffer);
-        clientSocket.close();
+        String content = "received" + requestBody;
 
+        ByteBuffer responseByteBuffer = ByteBuffer.wrap(content.getBytes());
+        clientSocket.write(responseByteBuffer);
+        clientSocket.close();
     }
 
 }
