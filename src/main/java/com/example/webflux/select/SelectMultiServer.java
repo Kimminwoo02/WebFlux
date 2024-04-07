@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class SelectorServer {
+public class SelectMultiServer {
     private static AtomicInteger count = new AtomicInteger(0);
 
     @SneakyThrows
@@ -23,10 +23,10 @@ public class SelectorServer {
         log.info("Start main");
         try (ServerSocketChannel serverSocket = ServerSocketChannel.open();
              Selector selector = Selector.open();
-             ) {
-                serverSocket.bind(new InetSocketAddress("localhost", 8080));
-                serverSocket.configureBlocking(false);
-                serverSocket.register(selector, SelectionKey.OP_ACCEPT); // 서버 소켓에서 accpet 준비가 되면 쓰레드에 알려준다.
+        ) {
+            serverSocket.bind(new InetSocketAddress("localhost", 8080));
+            serverSocket.configureBlocking(false);
+            serverSocket.register(selector, SelectionKey.OP_ACCEPT); // 서버 소켓에서 accpet 준비가 되면 쓰레드에 알려준다.
 
             while (true) {
                 selector.select();
@@ -71,14 +71,20 @@ public class SelectorServer {
     }
 
     private static void sendResponse(SocketChannel clientSocket ,String requestBody) throws InterruptedException {
+        CompletableFuture.runAsync(()->{
+            try{
+                Thread.sleep(10);
 
-        Thread.sleep(10);
+                String content = "received" + requestBody;
 
-        String content = "received" + requestBody;
+                ByteBuffer responseByteBuffer = ByteBuffer.wrap(content.getBytes());
+                clientSocket.write(responseByteBuffer);
+                clientSocket.close();
+            }catch (Exception e){
+                System.out.println("dd");
+            }
+        });
 
-        ByteBuffer responseByteBuffer = ByteBuffer.wrap(content.getBytes());
-        clientSocket.write(responseByteBuffer);
-        clientSocket.close();
     }
 
 }
