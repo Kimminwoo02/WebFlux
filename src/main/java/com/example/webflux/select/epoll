@@ -1,0 +1,27 @@
+epoll
+- linux2.6 이상에서 지원
+- os가 fd 세트를 관찰하고 I/O가 준비된 fd가 있다면 application에게 전달
+- macOS/BSD 계열이라면 kqueue, windows라면 IOCP 지원
+
+epoll함수
+- epoll_create : epoll 인스턴스를 생성한다
+- epoll_ctl : epoll 인스턴스에 fd와 관심있는 작업을 등록/삭제/수정한다
+- epoll_wait: fd와 관련된 이벤트를 감시한다.
+
+epoll_create
+- epoll 인스턴스를 생성하고 epoll 인스턴스의 fd를 반환
+- size는 처음 자료 구조 크기를 할당할 때 힌트로 사용. linux2.6.8부터는 무시
+- epoll 인스턴스는 관심 목록과 준비 목록 포함
+- 관심 목록 : 감시하기 위해서 등록된 fd 세트
+- 준비 목록 : I/O 준비 상태인 fd 세트. 준비 목록은 관심 목록의 부분 집합.
+
+epoll_ctl
+- epoll 인스턴스에 fd의 이벤트를 등록/삭제/수정 가능
+- epoll_create로 얻었던 epfd를 인자로 전달
+- 관심있는 fd와 이벤트 종류는 fd와 event를 인자로 전달
+- fd의 이벤트를 등록/삭제/수정 할 것인지를 op 인자로 전달
+
+epoll_ctl의 op
+- EPOLL_CTL_ADD : event 인자에 지정한 설정으로 epfd의 관심 목록에 fd 인자를 추가
+- EPOLL_CTL_MOD : 등록된 fd의 설정을 event 인자에 지정한 설정으로 변경
+- EPOLL_CTL_DEL : 관심 목록에서 fd를 제거
