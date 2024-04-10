@@ -1,0 +1,21 @@
+Reactor pattern
+- 동시에 들어오는 요청을 처리하는 이벤트 핸들링 패턴
+- service handler는 들어오는 요청들을 demultiplexing해서 request handler에게 동기적으로 전달
+- accept, read, write 이벤트들을 한 곳에 등록하여 관찰하고 준비 완료된 이벤트들을 reqyest handler에 전달한다
+- selector를 이용한 java nio 처리와 유사
+- REactor, SElector, Acceptor, EventHandler 구현체로 구성
+- Acceptor는 EventHandler 구현체의 일부이다. accept 이벤트에만 집중
+- EventHandler 구현체는 read 이벤트에만 집중
+
+구성 요소
+- reactor : 별도의 쓰레드에서 실행. 여러 요청의 이벤트를 등록하고 감시, 이벤트가 준비되면 dispatch한다.
+- handler : Reactor로부터 이벤트를 받아서 처리한다.
+
+구현
+- 별도의 쓰레드에서 동작해야 한다. -> runnable을 구현하고 별도의 쓰레드에서 run 실행
+- 여러 요청의 이벤트를 등록하고 감시한다 -> selector를 이용
+- 이벤트가 준비되면 dispatch한다. -> eventHandler 인터페이스를 만들고 call
+- Reactor로부터 이벤트를 받아서 처리. 즉 accept 이벤트와 read 이벤트를 각각 처리할 수 있는 eventHandler를 만든다.
+- EventHandler의 처리가 Reactor에 영향을 주지 않아야 하기 때문에 EventHandler에 별도의 쓰레드를 실행한다.
+
+

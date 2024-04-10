@@ -25,3 +25,32 @@ epoll_ctl의 op
 - EPOLL_CTL_ADD : event 인자에 지정한 설정으로 epfd의 관심 목록에 fd 인자를 추가
 - EPOLL_CTL_MOD : 등록된 fd의 설정을 event 인자에 지정한 설정으로 변경
 - EPOLL_CTL_DEL : 관심 목록에서 fd를 제거
+
+epoll_ctl event
+- epoll_ctl에 적용할 설정
+- fd와 어떤 I/O 이벤트를 관찰할지 설정
+- events는 이벤트 상수들을 0개 이상 or 해서 구성한 비트마스크
+
+epoll_ctl event 상수
+epollin : fd의 read가 준비 완료
+epollout: fd의 write가 준비 완료
+epollrdhup: socket의 상대방이 연결을 닫은 경우
+epollpri: fd에 예외가 발생
+epollerr: fd에 오류가 발생
+
+epoll_wait
+- epoll 인스턴스에서 이벤트를 대기
+- evnets 준비가 완료된 fd 목록을 최대 maxevents개 만큼반환
+- timeout 시간동안 block 되며 -1로 지정하면 하나의 fd라도 준비될 때 까지 무한정 대기
+
+Selector를 epoll에 대입하기
+
+selector 생성
+- selector의 생성은 epoll_create를 사용
+- size는 1 이상의 값을 주고 epfd를 저장
+- epoll_ctl에 EPOLL_CTL_ADD를 사용해서 관심 목록에 추가
+
+selector select
+- epoll_wait을 통해서 대기하고 evnets에 담긴 정보들을 반환
+- timeout을 -1로 제공해서 채널이 하나라도 준비되지 않는다면 무한정 대기
+- 이를 통해서 selector.select()에서 busy-wait 제거 가능
