@@ -53,4 +53,4 @@ selector 생성
 selector select
 - epoll_wait을 통해서 대기하고 evnets에 담긴 정보들을 반환
 - timeout을 -1로 제공해서 채널이 하나라도 준비되지 않는다면 무한정 대기
-- 이를 통해서 selector.select()에서 busy-wait 제거 가능
+- 이를 통해서 selector.select()에서 busy-wait 제거 가중
