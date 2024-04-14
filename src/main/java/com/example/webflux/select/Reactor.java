@@ -22,13 +22,16 @@ public class Reactor implements Runnable {
     private final ServerSocketChannel serverSocket;
 
     private final Selector selector;
+    private final EventHandler acceptor;
+
     @SneakyThrows
     public Reactor(int port){
-        Selector selector = Selector.open();
+        acceptor = new Acceptor();
+        selector = Selector.open();
         serverSocket = ServerSocketChannel.open();
         serverSocket.bind(new InetSocketAddress("localhost",port));
         serverSocket.configureBlocking(false);
-        serverSocket.register(selector,SelectionKey.OP_ACCEPT);
+        serverSocket.register(selector,SelectionKey.OP_ACCEPT).attach(acceptor);
     }
 
     @SneakyThrows
@@ -102,7 +105,27 @@ public class Reactor implements Runnable {
 
     @Override
     public void run() {
+        executorService.submit(()->{
+            while(true){
+                selector.select();
+                Iterator<SelectionKey> selectedKeys =selector.selectedKeys().iterator();
 
+                while (selectedKeys.hasNext()){
+                    SelectionKey key = selectedKeys.next();
+                    selectedKeys.remove();
+
+                    dispatch(key);
+                }
+            }
+        })
+    }
+
+    private void dispatch(SelectionKey selectionKey){
+        EventHandler attachment = (EventHandler) selectionKey.attachment();
+
+        if(selectionKey.isReadable() || selectionKey.isAcceptable()){
+            attachment.handle();
+        }
     }
 
     static class Acceptor implements EventHandler{
@@ -110,8 +133,9 @@ public class Reactor implements Runnable {
         @Override
         public void handle() {
             SocketChannel clientSocket = serverSocket.accept();
-
-            new TcpEventHandler(selector, clientSocket);
+            log.info("client:{}",clientSocket);
+            clientSocket.close();
+//            new TcpEventHandler(selector, clientSocket);
         }
     }
 }
