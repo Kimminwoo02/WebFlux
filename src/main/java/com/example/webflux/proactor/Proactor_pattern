@@ -1,0 +1,29 @@
+Reactor의 문제점
+- Reactor에서 단일 쓰레드와 Selector를 통해서 이벤트 처리
+- 감당하기 힘든 트래픽이 부여되거나 이벤트 처리에 오랜 시간이 걸리는 경우 전체 시스템에 영향을 줄 수 있다.
+
+Proactor pattern
+- I/O 이벤트를 시스템에 등록하고 이벤트 완료시 시스템이 직접 완료 안내
+- 등록된 콜백을 실행하여 I/O 이벤트를 처리
+- Reactor에서는 특정 부분이 병목이 되었지만, Proactor에서는 단일 쓰레드, Selector와 같은 병목 지점이 없다.
+- I/O 이벤트 완료를 전달하는 주체가 누구인가
+    - Reactor : selector
+    - Proactor: 커널
+
+Java AIO
+- java 1.7 부터 NIO2를 지원
+- AsynchronousChannel을 지원
+- AsynchronousSocketChannel, AsynchronousServerSocketChannel, AsynchronousFileChannel 등
+- callback과 future
+
+CompletionHandler
+- completed, failed 메소드 제공
+- completed: I/O 이벤트가 완료되었을 때 호출
+- failed : I/O 이벤트가 실패했을 때 호출
+- accept를 담당하는 handler라면 V에 AsynchronousSocketChannel 전달
+- read를 담당하는 Handler라면 V에 Integer 전달
+    - 읽은 Byte 수
+
+Proactor
+- AsynchronousServerSocketChannel에 Accept를 실행하고 acceptor를 등록
+- Reactor에서 싱글 쓰레드를 이용해서 loop를 실행했지만, Proactor에서 콜백만 등록
